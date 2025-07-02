@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Weekly Work Hours Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 20px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        input {
+            width: 100%;
+            margin: 5px 0 10px 0;
+            padding: 8px;
+        }
+        button {
+            padding: 10px;
+            width: 100%;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            background: #f1f1f1;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Weekly Work Hours Tracker</h2>
+<p>Enter your daily effective & gross hours:</p>
+
+<div id="inputs"></div>
+
+<button onclick="calculate()">Calculate Remaining</button>
+
+<div class="result" id="output"></div>
+
+<script>
+const TOTAL_EFFECTIVE = 40;
+const TOTAL_GROSS = 45;
+const WORK_DAYS = 5;
+
+// Generate input fields for 5 days
+const inputsDiv = document.getElementById('inputs');
+for (let i = 1; i <= WORK_DAYS; i++) {
+    inputsDiv.innerHTML += `<strong>Day ${i}</strong><br>
+    Effective hours (hh:mm): <input type="text" id="eff${i}" placeholder="e.g., 8:30"><br>
+    Gross hours (hh:mm): <input type="text" id="gross${i}" placeholder="e.g., 9:00"><br><br>`;
+}
+
+function timeToDecimal(time) {
+    const [h, m] = time.split(":").map(Number);
+    return h + (m / 60);
+}
+
+function calculate() {
+    let effTotal = 0;
+    let grossTotal = 0;
+    let daysWorked = 0;
+
+    for (let i = 1; i <= WORK_DAYS; i++) {
+        const effVal = document.getElementById(`eff${i}`).value.trim();
+        const grossVal = document.getElementById(`gross${i}`).value.trim();
+
+        if (effVal && grossVal) {
+            effTotal += timeToDecimal(effVal);
+            grossTotal += timeToDecimal(grossVal);
+            daysWorked++;
+        }
+    }
+
+    const effRemaining = TOTAL_EFFECTIVE - effTotal;
+    const grossRemaining = TOTAL_GROSS - grossTotal;
+    const remainingDays = WORK_DAYS - daysWorked;
+
+    let output = `<strong>Total Effective Hours:</strong> ${effTotal.toFixed(2)} / ${TOTAL_EFFECTIVE} hrs<br>`;
+    output += `<strong>Total Gross Hours:</strong> ${grossTotal.toFixed(2)} / ${TOTAL_GROSS} hrs<br><br>`;
+    output += `<strong>Remaining Effective Hours:</strong> ${effRemaining.toFixed(2)} hrs<br>`;
+    output += `<strong>Remaining Gross Hours:</strong> ${grossRemaining.toFixed(2)} hrs<br><br>`;
+
+    if (remainingDays > 0) {
+        output += `<strong>Suggested per remaining day:</strong><br>`;
+        output += `Effective: ${(effRemaining / remainingDays).toFixed(2)} hrs/day<br>`;
+        output += `Gross: ${(grossRemaining / remainingDays).toFixed(2)} hrs/day`;
+    } else {
+        output += `No days remaining.`;
+    }
+
+    document.getElementById('output').innerHTML = output;
+}
+</script>
+
+</body>
+</html>
